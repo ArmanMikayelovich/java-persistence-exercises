@@ -1,9 +1,9 @@
 package com.bobocode;
 
-import com.bobocode.util.ExerciseNotCompletedException;
-
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * {@link AccountDbInitializer} provides an API that allow to initialize (create) an Account table in the database
@@ -30,6 +30,20 @@ public class AccountDbInitializer {
      * @throws SQLException
      */
     public void init() throws SQLException {
-        throw new ExerciseNotCompletedException(); // todo
+        try (Connection connection = dataSource.getConnection()) {
+            Statement statement = connection.createStatement();
+            statement.execute("CREATE TABLE account (\n" +
+                    "    id BIGINT PRIMARY KEY,\n" +
+                    "    email VARCHAR(255) NOT NULL UNIQUE,\n" +
+                    "    first_name VARCHAR(255) NOT NULL,\n" +
+                    "    last_name VARCHAR(255) NOT NULL,\n" +
+                    "    gender VARCHAR(255) NOT NULL,\n" +
+                    "    birthday DATE NOT NULL,\n" +
+                    "    balance DECIMAL(19, 4),\n" +
+                    "    creation_time TIMESTAMP NOT NULL DEFAULT now(),\n" +
+                    "    CONSTRAINT account_pk PRIMARY KEY (id),\n" +
+                    "    CONSTRAINT account_email_uq UNIQUE (email)\n" +
+                    ");");
+        }
     }
 }
